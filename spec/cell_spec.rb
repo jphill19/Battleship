@@ -19,7 +19,7 @@ RSpec.describe Cell do
       expect(@cell.empty?).to eq(true)
     end
 
-    xit "returns false if not empty" do
+    it "returns false if not empty" do
       @cell.place_ship(@ship)
 
       expect(@cell.empty?).to eq(false)
@@ -30,7 +30,7 @@ RSpec.describe Cell do
     it "will add a ship object to ship attribute" do
       @cell.place_ship(@ship)
 
-      expect(@cell.ship).to be_an_instance_of(@ship)
+      expect(@cell.ship).to be_an_instance_of Ship
     end
   end
 
