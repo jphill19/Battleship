@@ -30,4 +30,10 @@ class Cell
     end
     false
   end
+
+  def render(render=false)
+    if @fired == false
+      return "."
+    end
+  end
 end
