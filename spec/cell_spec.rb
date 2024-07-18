@@ -72,27 +72,46 @@ RSpec.describe Cell do
 
   describe "#render" do
     it "returns '.' if it has not been fired upon" do
-      expect(@cell.render).to eq('.')
+      expect(@cell_1.render).to eq('.')
     end
 
     it "returns 'M' if it has been fired upon and does not contain a ship" do
-      expect(@cell.render).to eq('M')
+      @cell_1.fire_upon
+      expect(@cell_1.render).to eq('M')
     end
 
     it "returns 'H' if it has been fired upon and contains a ship" do
-      expect(@cell.render).to eq('H')
+      @cell_1.place_ship(@ship)
+      @cell_1.fire_upon
+      expect(@cell_1.render).to eq('H')
     end
 
     it "returns 'X' if the ship has been sunk" do
-      expect(@cell.render).to eq('X')
+      @cell_1.place_ship(@ship)
+      @cell_1.ship_hit
+      @cell_1.ship_hit
+      @cell_1.fire_upon
+
+      expect(@cell_1.render).to eq('X')
     end
 
     it "returns 'S' if ships present & not fired upon & users board" do
-
+      @cell_1.place_ship(@ship)
+      
+      expect(@cell_1.render(true)).to eq("S")
     end
 
-    it "returns '.' if the ships present, not fired upon but computers board"
+    it "returns '.' if the ships present, not fired upon but computers board" do
+      @cell_1.place_ship(@ship)
 
+      expect(@cell_1.render(false)).to eq(".")
+    end
+
+    it "returns 'H' if the ship was it on the users board" do
+      @cell_1.place_ship(@ship)
+      @cell_1.fire_upon
+
+      expect(@cell_1.render(true)).to eq("H")
     end
   end
 end
