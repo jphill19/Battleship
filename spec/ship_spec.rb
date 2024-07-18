@@ -47,14 +47,17 @@ RSpec.describe Ship do
         end            
     end
 
-    # describe "#sunk?" do
-    #     it 'returns a boolean of the status of the ship' do
-    #         expect(@cruiser.sunk?).to eq false
-    #     end
+    describe "#sunk?" do
+        it 'returns a boolean of the status of the ship' do
+            expect(@cruiser.sunk?).to eq false
+        end
 
-    #     it 'can sink the ship when health is 0' do
-    #         @cruiser.health = 0
-    #         expect(@cruiser.sunk?).to eq true
-    #     end
-    # end
+        it 'can sink the ship when health is 0' do
+            @cruiser.hit
+            @cruiser.hit
+            @cruiser.hit
+            expect(@cruiser.health).to eq 0
+            expect(@cruiser.sunk?).to eq true
+        end
+    end
 end
