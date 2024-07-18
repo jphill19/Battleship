@@ -4,6 +4,7 @@ require 'spec_helper'
 RSpec.describe Cell do
   before(:each) do
     @cell = Cell.new("B4")
+    @ship = Ship.new("Cruiser", 3)
   end
 
   describe "#initialize" do
@@ -19,7 +20,17 @@ RSpec.describe Cell do
     end
 
     xit "returns false if not empty" do
+      @cell.place_ship(@ship)
+
       expect(@cell.empty?).to eq(false)
+    end
+  end
+
+  describe "#place_ship" do
+    it "will add a ship object to ship attribute" do
+      @cell.place_ship(@ship)
+
+      expect(@cell.ship).to be_an_instance_of(@ship)
     end
   end
 
