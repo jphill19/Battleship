@@ -30,4 +30,22 @@ class Cell
     end
     false
   end
+
+  def render(toggle=false)
+    if toggle
+      if @fired == false && !empty?
+        return "S"
+      end
+    end
+    
+    if @fired == false
+      return "."
+    elsif empty? 
+      return "M"
+    elsif @ship.sunk?
+      return "X"
+    else
+      return "H"
+    end
+  end
 end
