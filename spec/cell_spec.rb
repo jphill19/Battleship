@@ -34,4 +34,22 @@ RSpec.describe Cell do
     end
   end
 
+  describe "#fire_upon?" do
+    it 'checks that cell is not shot' do
+    end
+
+    it 'checks that cell is shot' do
+    end
+
+    it 'checks if ship is present' do
+    end
+  end
+
+  describe "#ship_hit" do
+    it 'should not decrease any ship health on empty cell' do
+    end
+    
+    it 'makes ship health decrease on hit' do
+    end
+  end
 end
