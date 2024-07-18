@@ -36,19 +36,25 @@ RSpec.describe Cell do
 
   describe "#fire_upon?" do
     it 'checks that cell is not shot' do
+      expect(@cell.fired_upon?).to eq false
     end
 
     it 'checks that cell is shot' do
-    end
+      expect(@cell.fired_upon?).to eq false
+      @cell.fire_upon
 
-    it 'checks if ship is present' do
+      expect(@cell.fired_upon?).to eq true
     end
   end
 
   describe "#ship_hit" do
-    it 'should not decrease any ship health on empty cell' do
+    it 'checks if ship is present' do
+      
     end
     
+    it 'should not decrease any ship health on empty cell' do
+    end
+
     it 'makes ship health decrease on hit' do
     end
   end
