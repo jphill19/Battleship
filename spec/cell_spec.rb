@@ -13,4 +13,14 @@ RSpec.describe Cell do
     end
   end
 
+  describe "#empty?" do
+    it "returns true if empty" do
+      expect(@cell.empty?).to eq(true)
+    end
+
+    xit "returns false if not empty" do
+      expect(@cell.empty?).to eq(false)
+    end
+  end
+
 end
