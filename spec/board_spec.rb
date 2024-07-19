@@ -49,16 +49,24 @@ RSpec.describe Board do
         end
 
         describe '#straight_line?' do
-            it 'checks all the coordinates first element' do
+            it 'checks all the coordinates first element returns true if they match' do
+                coordinates = ['A1', 'A2', 'A3']
+                expect(@board.straight_line(coordinates)).to eq true
             end
 
-            it 'checks all the coordinates second element' do
+            it 'checks all the coordinates first element returns false if they dont match' do
+                coordinates = ['A1', 'B2', 'C3']
+                expect(@board.straight_line(coordinates)).to eq false
             end
 
-            it 'returns true if either element is all the same' do
+            it 'checks all the coordinates second element returns true if they match' do
+                coordinates = ['A1', 'B1', 'C1']
+                expect(@board.straight_line(coordinates)).to eq true
             end
 
-            it 'returns false if all elements are non-consecutive' do
+            it 'checks all the coordinates second element returns false if they match' do
+                coordinates = ['A1', 'B2', 'C3']
+                expect(@board.straight_line(coordinates)).to eq false
             end
         end
 
