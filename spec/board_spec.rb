@@ -36,7 +36,15 @@ RSpec.describe Board do
     end
 
     describe '#valid_placement' do
-        it 'reads the argument as a string' do
+        it 'reads the arguments' do
+            coordinates = ['A1', 'B1', 'C1']
+            @board.valid_placement(@cruiser, coordinates)
+            expect(@cruiser.length).to eq coordinates.length
+        end
+
+        it 'returns false if argument lengths dont match' do
+            coordinates = ['A1', 'C1']
+            expect(@board.valid_placement(@cruiser, coordinates)).to eq false
         end
 
         describe '#straight_line' do
