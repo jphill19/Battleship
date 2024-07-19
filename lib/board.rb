@@ -1,12 +1,14 @@
 class Board
     attr_reader :cells
 
-    def initialize
+    def initialize(end_row = "D", end_column = 4)
        @cells = Hash.new("na")
+       @end_row = end_row
+       @end_column = end_column
        new_board
     end
 
-    def new_board(end_row = "D",end_column = 4)
+    def new_board(end_row = @end_row,end_column = @end_column)
         ("A"..end_row).to_a.each do |letter|
             (1..end_column).to_a.each do |num|
                 coordinate = "#{letter}#{num}"
@@ -34,5 +36,10 @@ class Board
     end
 
     def straight_line(coordinates)
+    end
+
+    def consecutive_check?(coordinates)
+        
+    end
         
 end
