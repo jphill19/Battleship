@@ -25,14 +25,14 @@ class Board
         # @cells.find {|cell| cell.coordinate == coord ? true : false}
     end
 
-    def valid_placement(ship, coordinates)
-        if ship.length != coordinates.length
-            return false
-        elsif straight_line(coordinates)
+    def valid_placement?(ship, coordinates)
+        
+    end
 
-        end
+    def match_length?(ship, coordinates)
+        ship.length == coordinates.length
     end
 
     def straight_line(coordinates)
-        
+    end
 end

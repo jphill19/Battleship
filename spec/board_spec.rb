@@ -35,19 +35,20 @@ RSpec.describe Board do
         end
     end
 
-    describe '#valid_placement' do
-        it 'reads the arguments' do
-            coordinates = ['A1', 'B1', 'C1']
-            @board.valid_placement(@cruiser, coordinates)
-            expect(@cruiser.length).to eq coordinates.length
+    describe '#valid_placement?' do
+        describe '#match_length?' do
+            it 'reads the arguments' do
+                coordinates = ['A1', 'B1', 'C1']
+                expect(@board.match_length?(@cruiser, coordinates)).to eq true
+            end
+
+            it 'returns false if argument lengths dont match' do
+                coordinates = ['A1', 'C1']
+                expect(@board.match_length?(@cruiser, coordinates)).to eq false
+            end
         end
 
-        it 'returns false if argument lengths dont match' do
-            coordinates = ['A1', 'C1']
-            expect(@board.valid_placement(@cruiser, coordinates)).to eq false
-        end
-
-        describe '#straight_line' do
+        describe '#straight_line?' do
             it 'checks all the coordinates first element' do
             end
 
@@ -61,7 +62,7 @@ RSpec.describe Board do
             end
         end
 
-        describe '#consecutive_check' do
+        describe '#consecutive_check?' do
             it 'checks the non-consecutive element to see if it increments by one' do
             end
 
