@@ -2,17 +2,6 @@ require 'spec_helper'
 
 RSpec.describe Board do
     before(:each) do
-    #   A1 = Cell.new("A1")
-    #   A2 = Cell.new("A2")
-    #   A3 = Cell.new("A3")
-    #   B1 = Cell.new("B1")
-    #   B2 = Cell.new("B2")
-    #   B3 = Cell.new("B3")
-    #   C1 = Cell.new("C1")
-    #   C2 = Cell.new("C2")
-    #   C3 = Cell.new("C3")
-    #   @cells = [A1, A2, A3, B1, B2, B3, C1, C2, C3]
-    #   @board = Board.new(@cells)
       @board = Board.new
       @cruiser = Ship.new("Cruiser", 3)
       @submarine = Ship.new("Submarine", 2)
@@ -47,6 +36,44 @@ RSpec.describe Board do
     end
 
     describe '#valid_placement' do
+        it 'reads the argument as a string' do
+        end
+
+        describe '#straight_line' do
+            it 'checks all the coordinates first element' do
+            end
+
+            it 'checks all the coordinates second element' do
+            end
+
+            it 'returns true if either element is all the same' do
+            end
+
+            it 'returns false if all elements are non-consecutive' do
+            end
+        end
+
+        describe '#consecutive_check' do
+            it 'checks the non-consecutive element to see if it increments by one' do
+            end
+
+            it 'returns true if the elements are consecutive' do
+            end
+
+            it 'returns false if the elements are not consecutive' do
+            end
+        end
+
+        describe '#overlap?' do
+            it 'checks each cell to see if a ship has already been placed' do
+            end
+
+            it 'returns true if any cell already contains a ship' do
+            end
+
+            it 'returns false if all cells are empty' do
+            end
+        end
     end
 
     describe '#place' do

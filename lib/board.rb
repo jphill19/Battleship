@@ -11,7 +11,6 @@ class Board
             if cell.coordinate == coord
                 return true
             end
-            false
         end
         false
         # @cells.find {|cell| cell.coordinate == coord ? true : false}
