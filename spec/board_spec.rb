@@ -82,13 +82,26 @@ RSpec.describe Board do
         end
 
         describe '#overlap?' do
-            it 'checks each cell to see if a ship has already been placed' do
-            end
-
             it 'returns true if any cell already contains a ship' do
+                @board.cells['A1'].place_ship(@submarine)
+                @board.cells['A2'].place_ship(@submarine)
+                coordinates = ['A1', 'A2', 'A3']
+
+                expect(@board.overlap?(coordinates)).to eq true
             end
 
             it 'returns false if all cells are empty' do
+                coordinates = ['A1', 'A2', 'A3']
+
+                expect(@board.overlap?(coordinates)).to eq false
+            end
+            
+            it 'works even with other ships on the board' do
+                @board.cells['A1'].place_ship(@submarine)
+                @board.cells['A2'].place_ship(@submarine)
+                coordinates = ['C1', 'C2', 'C3']
+
+                expect(@board.overlap?(coordinates)).to eq false
             end
         end
     end
