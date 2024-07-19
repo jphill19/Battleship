@@ -19,9 +19,7 @@ class Board
     
     def valid_coordinate?(coord)
         @cells.find do |coordinate, cell|
-            if cell.coordinate == coord
-                return true
-            end
+            return true if cell.coordinate == coord
         end
         false
         # @cells.find {|cell| cell.coordinate == coord ? true : false}
@@ -43,7 +41,6 @@ class Board
             column << coordinate[1]
         end
         row.uniq.count == 1 || column.uniq.count == 1 ? true : false
-
     end
 
     def consecutive_check?(coordinates)
@@ -52,9 +49,7 @@ class Board
         
     def overlap?(coordinates)
         coordinates.each do |coordinate|
-            if !@cells[coordinate].empty?
-                return true
-            end
+            return true if !@cells[coordinate].empty?
         end
         false
     end
