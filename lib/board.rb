@@ -42,11 +42,8 @@ class Board
             row << coordinate[0]
             column << coordinate[1]
         end
-        if row.uniq.count == 1 || column.uniq.count == 1
-            true
-        else
-            false
-        end
+        row.uniq.count == 1 || column.uniq.count == 1 ? true : false
+
     end
 
     def consecutive_check?(coordinates)
