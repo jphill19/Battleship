@@ -36,6 +36,17 @@ class Board
     end
 
     def straight_line(coordinates)
+        row = []
+        column = []
+        coordinates.each do |coordinate|
+            row << coordinate[0]
+            column << coordinate[1]
+        end
+        if row.uniq.count == 1 || column.uniq.count == 1
+            true
+        else
+            false
+        end
     end
 
     def consecutive_check?(coordinates)
