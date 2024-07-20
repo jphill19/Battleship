@@ -34,17 +34,25 @@ class Board
     end
 
     def straight_line(coordinates)
-        row = []
-        column = []
+        rows = []
+        columns = []
         coordinates.each do |coordinate|
-            row << coordinate[0]
-            column << coordinate[1]
+            rows << coordinate[0]
+            columns << coordinate[1]
         end
-        row.uniq.count == 1 || column.uniq.count == 1 ? true : false
+        if rows.uniq.count == 1
+            # returning column to perform consentive check on it
+            return {"rows" =>  columns}
+        elsif columns.uniq.count == 1
+            # returning row to perform consective check on it
+            return {"columns" => rows}
+        else
+            return false
+        end
     end
 
-    def consecutive_check?(coordinates)
-        
+    def consecutive_check?(coordinates, line)
+            
     end
         
     def overlap?(coordinates)
