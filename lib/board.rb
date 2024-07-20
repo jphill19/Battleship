@@ -62,10 +62,14 @@ class Board
     end
 
     def consecutive_check?(line)
-        if line.keys[0] == "rows"
-            return row_consecutive?(line["rows"]) 
-        elsif line.keys[0] == "columns"
-            return column_consecutive?(line["columns"])
+        if line.class == Hash
+            if line.keys[0] == "rows"
+                return row_consecutive?(line["rows"]) 
+            elsif line.keys[0] == "columns"
+                return column_consecutive?(line["columns"])
+            else
+                false
+            end
         else
             false
         end

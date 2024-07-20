@@ -1,6 +1,10 @@
-require '/spec/spec_helper'
+require './spec/spec_helper'
 
 board = Board.new
-row = ['A','B','C']
+# row = ['A','B','C']
+row = {"rows" => ['A','B','C']}
+column = {"columns" => ['1','2','3']}
 
-board.row_check?(row)
+# puts row.keys[0].class
+
+puts board.consecutive_check?(row)

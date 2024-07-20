@@ -134,13 +134,28 @@ RSpec.describe Board do
         end
 
         describe '#consecutive_check?' do
-            it 'checks the non-consecutive element to see if it increments by one' do
+            it 'checks if the arguement is a row or column and then test if they are consecutive, returns true if consecutive' do
+                row = {"rows" => ['A','B','C']}
+                column = {"columns" => ['1','2','3']}
+
+                expect(@board.consecutive_check?(row)).to eq true
+                expect(@board.consecutive_check?(column)).to eq true
             end
 
-            it 'returns true if the elements are consecutive' do
+            it 'checks if the arguement is a row or column and then test if they are consecutive, returns false if not consecutive' do
+                row = {"rows" => ['A','B','D']}
+                column = {"columns" => ['1','2','4']}
+
+                expect(@board.consecutive_check?(row)).to eq false
+                expect(@board.consecutive_check?(column)).to eq false
             end
 
-            it 'returns false if the elements are not consecutive' do
+            it 'returns false if it does not recognize the arguement data' do
+                row = ['A','B','C']
+                column = {"ship" => ['1','2','3']}
+
+                expect(@board.consecutive_check?(row)).to eq false
+                expect(@board.consecutive_check?(column)).to eq false
             end
         end
 
