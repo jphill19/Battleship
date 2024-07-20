@@ -23,38 +23,43 @@ RSpec.describe Board do
 
     end
 
-    describe '#valid_coordinate?' do
-        it 'verifies the arguemnt is on the board' do
-            expect(@board.valid_coordinate?("A1")).to eq true
-            expect(@board.valid_coordinate?("B3")).to eq true
-        end
-
-        it 'catches if the arguement is not on the board' do
-            expect(@board.valid_coordinate?("A22")).to eq false
-            expect(@board.valid_coordinate?("dog")).to eq false
-        end
-    end
-
     describe '#valid_coordinates?' do
-        it 'verifies if each element inside an array is on the board' do
-            coordinates_1 = ['A1', 'A2', 'A3']
-            coordinates_2 = ['B1', 'C1', 'D1']
+        describe '#valid_coordinate?' do
+            it 'verifies the arguemnt is on the board' do
+                expect(@board.valid_coordinate?("A1")).to eq true
+                expect(@board.valid_coordinate?("B3")).to eq true
+            end
 
-            expect(@board.valid_coordinates?(coordinates_1)).to eq true
-            expect(@board.valid_coordinates?(coordinates_2)).to eq true
+            it 'catches if the arguement is not on the board' do
+                expect(@board.valid_coordinate?("A22")).to eq false
+                expect(@board.valid_coordinate?("dog")).to eq false
+            end
         end
 
-        it 'catches if an element inside an array is not on the board' do
-            coordinates_1 = ['A1', 'A5', 'E1']
-            coordinates_2 = ['dog']
-            coordinates_3 = [3]
+        describe '#valid_coordinates?' do
+            it 'verifies if each element inside an array is on the board' do
+                coordinates_1 = ['A1', 'A2', 'A3']
+                coordinates_2 = ['B1', 'C1', 'D1']
 
-            expect(@board.valid_coordinates?(coordinates_1)).to eq false
-            expect(@board.valid_coordinates?(coordinates_2)).to eq false
-            expect(@board.valid_coordinates?(coordinates_3)).to eq false
+                expect(@board.valid_coordinates?(coordinates_1)).to eq true
+                expect(@board.valid_coordinates?(coordinates_2)).to eq true
+            end
+
+            it 'catches if an element inside an array is not on the board' do
+                coordinates_1 = ['A1', 'A5', 'E1']
+                coordinates_2 = ['dog']
+                coordinates_3 = [3]
+
+                expect(@board.valid_coordinates?(coordinates_1)).to eq false
+                expect(@board.valid_coordinates?(coordinates_2)).to eq false
+                expect(@board.valid_coordinates?(coordinates_3)).to eq false
+            end
+
         end
-
     end
+  
+
+
 
     describe '#valid_placement?' do
         describe '#match_length?' do
@@ -207,6 +212,8 @@ RSpec.describe Board do
                 expect(@board.overlap?(coordinates)).to eq false
             end
         end
+
+        describe "#valid_placement?" d
     end
 
 
