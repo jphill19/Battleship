@@ -101,8 +101,36 @@ RSpec.describe Board do
             end
         end
 
-        describe 'column_consecutive?' do
-            it "checks that a column is "
+        describe '#column_consecutive?' do
+            it "checks that a column is consecutive, returns true if it is" do
+                column = [1, 2, 3]
+                expect(@board.column_consecutive?(column)).to eq true
+            end
+
+            it "checks that a column is consecutive, returns false if it isn't" do
+                column = [1, 2, 4]
+                expect(@board.column_consecutive?(column)).to eq false
+            end
+
+            it "is dynamic and works with any size column" do
+                small_good_column = [1, 2]
+                large_good_column = [1, 2, 3, 4]
+                small_bad_column = [1, 3]
+                large_bad_column = [1, 2, 4, 5]
+
+                expect(@board.column_consecutive?(small_good_column)).to eq true
+                expect(@board.column_consecutive?(large_good_column)).to eq true
+                expect(@board.column_consecutive?(small_bad_column)).to eq false
+                expect(@board.column_consecutive?(large_bad_column)).to eq false
+            end
+
+            it "works with unordered arrays" do
+                good_column = [2, 3, 1]
+                bad_column = [4, 1, 2]
+
+                expect(@board.column_consecutive?(good_column)).to eq true
+                expect(@board.column_consecutive?(bad_column)).to eq false
+            end
         end
 
         describe '#consecutive_check?' do
