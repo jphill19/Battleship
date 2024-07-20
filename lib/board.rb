@@ -41,18 +41,34 @@ class Board
             columns << coordinate[1]
         end
         if rows.uniq.count == 1
-            # returning column to perform consentive check on it
-            return {"rows" =>  columns}
+            return {"columns" =>  columns}
         elsif columns.uniq.count == 1
-            # returning row to perform consective check on it
-            return {"columns" => rows}
+            return {"rows" => rows}
         else
             return false
         end
     end
 
-    def consecutive_check?(coordinates, line)
-            
+    def row_consecutive?(row)
+        ord_letters = row.map { |letter| letter.ord}
+        ord_letters_sort = ord_letters.sort
+        return ord_letters_sort == (ord_letters_sort.first .. ord_letters_sort.last).to_a
+    end
+
+    def column_consecutive?(column)
+        int_nums = column.map { |num| num.to_i}
+        int_nums_sort = int_nums.sort
+        return int_nums_sort == (int_nums_sort.first .. int_nums_sort.last).to_a
+    end
+
+    def consecutive_check?(line)
+        if line.keys[0] == "rows"
+            return row_consecutive?(line["rows"]) 
+        elsif line.keys[0] == "columns"
+            return column_consecutive?(line["columns"])
+        else
+            false
+        end
     end
         
     def overlap?(coordinates)
