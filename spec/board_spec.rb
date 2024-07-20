@@ -213,7 +213,43 @@ RSpec.describe Board do
             end
         end
 
-        describe "#valid_placement?" d
+        describe "#valid_placement?" do
+            it "checks if the placement is valid for a ship, returns true if valid" do
+                coordinates_1 = ['A1','A2','A3']
+                coordinates_2 = ['A1','B1','C1']
+                
+                expect(@board.valid_placement?(@cruiser, coordinates_1)).to eq true
+                expect(@board.valid_placement?(@cruiser, coordinates_2)).to eq true
+            end
+
+            it "checks if the placement is valid for a ship, returns false if ship length & coordinates do match" do
+                coordinates = ['A1','A2']
+                expect(@board.valid_placement?(@cruiser, coordinates)).to eq false
+            end
+
+            it "checks if the placement is valid for a ship, returns false if coordinates are not valid" do
+                coordinates = ['B1','D1','E1']
+                expect(@board.valid_placement?(@cruiser, coordinates)).to eq false
+            end
+
+            it "checks if the placement is valid for a ship, returns false if the all coordinates are not in the same column or row" do
+                coordinates = ['A1', 'B2', 'A3']
+                expect(@board.valid_placement?(@cruiser, coordinates)).to eq false
+            end
+
+            it "checks if the placement is valid for a ship, returns false if the coordinates are not consecutive" do
+                coordinates = ['A1', 'A3', 'A4']
+                expect(@board.valid_placement?(@cruiser, coordinates)).to eq false
+            end
+
+            it "checks if the placement is valid for a ship, returns false if the coordinates are overlapping with another ship"  do
+                @board.cells['A1'].place_ship(@submarine)
+                @board.cells['A2'].place_ship(@submarine)
+                coordinates = ['A1','A2','A3']
+
+                expect(@board.valid_placement?(@cruiser, coordinates)).to eq false
+            end
+        end
     end
 
 
