@@ -22,11 +22,23 @@ class Board
             return true if cell.coordinate == coord
         end
         false
-        # @cells.find {|cell| cell.coordinate == coord ? true : false}
+    end
+
+    def valid_coordinates?(coordinates)
+        coordinates.each do |coordinate|
+            return false if !valid_coordinate?(coordinate)
+        end
+        true
     end
 
     def valid_placement?(ship, coordinates)
-        
+        return false if !match_length?(ship,coordinates)
+        return false if !valid_coordinates?(coordinates)
+        line = straight_line(coordinates)
+        return false if !line
+        return false if !consecutive_check?(line)
+        return false if overlap?(coordinates)
+        true
     end
 
     def match_length?(ship, coordinates)
@@ -81,4 +93,5 @@ class Board
         end
         false
     end
+
 end

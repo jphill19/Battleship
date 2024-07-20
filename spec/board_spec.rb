@@ -35,6 +35,27 @@ RSpec.describe Board do
         end
     end
 
+    describe '#valid_coordinates?' do
+        it 'verifies if each element inside an array is on the board' do
+            coordinates_1 = ['A1', 'A2', 'A3']
+            coordinates_2 = ['B1', 'C1', 'D1']
+
+            expect(@board.valid_coordinates?(coordinates_1)).to eq true
+            expect(@board.valid_coordinates?(coordinates_2)).to eq true
+        end
+
+        it 'catches if an element inside an array is not on the board' do
+            coordinates_1 = ['A1', 'A5', 'E1']
+            coordinates_2 = ['dog']
+            coordinates_3 = [3]
+
+            expect(@board.valid_coordinates?(coordinates_1)).to eq false
+            expect(@board.valid_coordinates?(coordinates_2)).to eq false
+            expect(@board.valid_coordinates?(coordinates_3)).to eq false
+        end
+
+    end
+
     describe '#valid_placement?' do
         describe '#match_length?' do
             it 'reads the arguments' do
@@ -69,93 +90,97 @@ RSpec.describe Board do
                 expect(@board.straight_line(coordinates)).to eq false
             end
         end
-        describe '#row_consecutive?' do
-            it "checks that a row is conesecutive, returns true if it is" do
-                row = ['A','B','C']
-                expect(@board.row_consecutive?(row)).to eq true
-            end
 
-            it "checks that a row is consecutive, returns false if it isn't" do
-                row = ['A','B','D']
-                expect(@board.row_consecutive?(row)).to eq false
-            end
-
-            it "is dynamic and works with any size row" do
-                small_good_row = ['A','B']
-                large_good_row = ['A','B','C','D']
-                small_bad_row = ['A','C']
-                large_bad_row = ['A','B','D','E']
-
-                expect(@board.row_consecutive?(small_good_row)).to eq true
-                expect(@board.row_consecutive?(large_good_row)).to eq true
-                expect(@board.row_consecutive?(small_bad_row)).to eq false
-                expect(@board.row_consecutive?(large_bad_row)).to eq false
-            end
-
-            it "works with unordered arrays" do
-                good_row = ['B','C','A']
-                bad_row = ['D', 'A', 'B']
-
-                expect(@board.row_consecutive?(good_row)).to eq true
-                expect(@board.row_consecutive?(bad_row)).to eq false
-            end
-        end
-
-        describe '#column_consecutive?' do
-            it "checks that a column is consecutive, returns true if it is" do
-                column = [1, 2, 3]
-                expect(@board.column_consecutive?(column)).to eq true
-            end
-
-            it "checks that a column is consecutive, returns false if it isn't" do
-                column = [1, 2, 4]
-                expect(@board.column_consecutive?(column)).to eq false
-            end
-
-            it "is dynamic and works with any size column" do
-                small_good_column = [1, 2]
-                large_good_column = [1, 2, 3, 4]
-                small_bad_column = [1, 3]
-                large_bad_column = [1, 2, 4, 5]
-
-                expect(@board.column_consecutive?(small_good_column)).to eq true
-                expect(@board.column_consecutive?(large_good_column)).to eq true
-                expect(@board.column_consecutive?(small_bad_column)).to eq false
-                expect(@board.column_consecutive?(large_bad_column)).to eq false
-            end
-
-            it "works with unordered arrays" do
-                good_column = [2, 3, 1]
-                bad_column = [4, 1, 2]
-
-                expect(@board.column_consecutive?(good_column)).to eq true
-                expect(@board.column_consecutive?(bad_column)).to eq false
-            end
-        end
 
         describe '#consecutive_check?' do
-            it 'checks if the arguement is a row or column and then test if they are consecutive, returns true if consecutive' do
-                row = {"rows" => ['A','B','C']}
-                column = {"columns" => ['1','2','3']}
+            describe '#row_consecutive?' do
+                it "checks that a row is conesecutive, returns true if it is" do
+                    row = ['A','B','C']
+                    expect(@board.row_consecutive?(row)).to eq true
+                end
 
-                expect(@board.consecutive_check?(row)).to eq true
-                expect(@board.consecutive_check?(column)).to eq true
+                it "checks that a row is consecutive, returns false if it isn't" do
+                    row = ['A','B','D']
+                    expect(@board.row_consecutive?(row)).to eq false
+                end
+
+                it "is dynamic and works with any size row" do
+                    small_good_row = ['A','B']
+                    large_good_row = ['A','B','C','D']
+                    small_bad_row = ['A','C']
+                    large_bad_row = ['A','B','D','E']
+
+                    expect(@board.row_consecutive?(small_good_row)).to eq true
+                    expect(@board.row_consecutive?(large_good_row)).to eq true
+                    expect(@board.row_consecutive?(small_bad_row)).to eq false
+                    expect(@board.row_consecutive?(large_bad_row)).to eq false
+                end
+
+                it "works with unordered arrays" do
+                    good_row = ['B','C','A']
+                    bad_row = ['D', 'A', 'B']
+
+                    expect(@board.row_consecutive?(good_row)).to eq true
+                    expect(@board.row_consecutive?(bad_row)).to eq false
+                end
             end
 
-            it 'checks if the arguement is a row or column and then test if they are consecutive, returns false if not consecutive' do
-                row = {"rows" => ['A','B','D']}
-                column = {"columns" => ['1','2','4']}
+            describe '#column_consecutive?' do
+                it "checks that a column is consecutive, returns true if it is" do
+                    column = [1, 2, 3]
+                    expect(@board.column_consecutive?(column)).to eq true
+                end
 
-                expect(@board.consecutive_check?(row)).to eq false
-                expect(@board.consecutive_check?(column)).to eq false
+                it "checks that a column is consecutive, returns false if it isn't" do
+                    column = [1, 2, 4]
+                    expect(@board.column_consecutive?(column)).to eq false
+                end
+
+                it "is dynamic and works with any size column" do
+                    small_good_column = [1, 2]
+                    large_good_column = [1, 2, 3, 4]
+                    small_bad_column = [1, 3]
+                    large_bad_column = [1, 2, 4, 5]
+
+                    expect(@board.column_consecutive?(small_good_column)).to eq true
+                    expect(@board.column_consecutive?(large_good_column)).to eq true
+                    expect(@board.column_consecutive?(small_bad_column)).to eq false
+                    expect(@board.column_consecutive?(large_bad_column)).to eq false
+                end
+
+                it "works with unordered arrays" do
+                    good_column = [2, 3, 1]
+                    bad_column = [4, 1, 2]
+
+                    expect(@board.column_consecutive?(good_column)).to eq true
+                    expect(@board.column_consecutive?(bad_column)).to eq false
+                end
             end
 
-            it 'returns false if it does not recognize the arguement data' do
-                row = ['A','B','C']
-                column = {"ship" => ['1','2','3']}
+            describe "#consecutive_check?" do
+                it 'checks if the arguement is a row or column and then test if they are consecutive, returns true if consecutive' do
+                    row = {"rows" => ['A','B','C']}
+                    column = {"columns" => ['1','2','3']}
 
-                expect(@board.consecutive_check?(row)).to eq false
-                expect(@board.consecutive_check?(column)).to eq false
+                    expect(@board.consecutive_check?(row)).to eq true
+                    expect(@board.consecutive_check?(column)).to eq true
+                end
+
+                it 'checks if the arguement is a row or column and then test if they are consecutive, returns false if not consecutive' do
+                    row = {"rows" => ['A','B','D']}
+                    column = {"columns" => ['1','2','4']}
+
+                    expect(@board.consecutive_check?(row)).to eq false
+                    expect(@board.consecutive_check?(column)).to eq false
+                end
+
+                it 'returns false if it does not recognize the arguement data' do
+                    row = ['A','B','C']
+                    column = {"ship" => ['1','2','3']}
+
+                    expect(@board.consecutive_check?(row)).to eq false
+                    expect(@board.consecutive_check?(column)).to eq false
+                end
             end
         end
 
@@ -183,6 +208,8 @@ RSpec.describe Board do
             end
         end
     end
+
+
 
     describe '#place' do
     end
