@@ -278,4 +278,55 @@ RSpec.describe Board do
             expect(@board.place(@cruiser, coordinates)).to eq false
         end
     end
+
+    describe '#render' do
+        describe '#render_column_title' do
+            it "dynamically creates a row with the amount column titles" do
+                larger_board = Board.new("D", 6)
+            
+                expect(@board.render_column_title).to eq "  1 2 3 4"
+                expect(larger_board.render_column_title).to eq "  1 2 3 4 5 6"
+            end
+        end
+
+        describe "#render_body" do 
+            it "dynamically renders each row title and cell state" do
+                larger_board = Board.new("E",7)
+
+                expect(@board.render_body).to eq "\nA . . . .\nB . . . .\nC . . . .\nD . . . ."
+                expect(larger_board.render_body).to eq "\nA . . . . . . .\nB . . . . . . .\nC . . . . . . .\nD . . . . . . .\nE . . . . . . ."
+            end
+
+            it "is rendering the actualy state of the cell" do
+                @board.cells['C2'].fire_upon
+                @board.place(@submarine, ['B2','B3'])
+
+                expect(@board.render_body).to eq "\nA . . . .\nB . . . .\nC . M . .\nD . . . ."
+            end
+
+            it "can take true as an arugement to display ships" do
+                @board.cells['C2'].fire_upon
+                @board.place(@submarine, ['B2','B3'])
+
+                expect(@board.render_body(true)).to eq "\nA . . . .\nB . S S .\nC . M . .\nD . . . ."
+            end
+
+        end
+
+        describe "#render" do
+            it "dynamically renders entire board" do
+                larger_board = Board.new('E', 5)
+
+                expect(@board.render).to eq "  1 2 3 4\nA . . . .\nB . . . .\nC . . . .\nD . . . ."
+                expect(larger_board.render).to eq "  1 2 3 4 5\nA . . . . .\nB . . . . .\nC . . . . .\nD . . . . .\nE . . . . ."
+            end
+
+            it "can take true as anrguement to disply ships" do
+                @board.cells['A3'].fire_upon
+                @board.place(@submarine, ['D2','C2'])
+
+                expect(@board.render(true)).to eq "  1 2 3 4\nA . . M .\nB . . . .\nC . S . .\nD . S . ."
+            end
+        end
+    end
 end

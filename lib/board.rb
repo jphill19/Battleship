@@ -4,7 +4,7 @@ class Board
     def initialize(end_row = "D", end_column = 4)
        @cells = Hash.new("na")
        @end_row = end_row
-       @end_column = end_column
+       @end_column = end_column.to_i
        new_board
     end
 
@@ -102,6 +102,30 @@ class Board
         end
         false
 
+    end
+
+    def render_column_title
+        grid_column_tittle = " "
+        (1 .. @end_column).to_a.each do |num|
+            grid_column_tittle += " #{num}"
+        end
+        grid_column_tittle
+    end
+
+    def render_body(toggle = false)
+        grid_body = ""
+        ("A" .. @end_row).to_a.each do |letter|
+            grid_body += "\n#{letter}"
+            (1 .. @end_column).to_a.each do |num|
+                coordinate = "#{letter}#{num}"
+                grid_body += " #{@cells[coordinate].render(toggle)}"
+            end
+        end
+        grid_body
+    end
+
+    def render(toggle = false)
+        render_column_title + render_body(toggle)
     end
 
 end
