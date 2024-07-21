@@ -16,30 +16,32 @@ RSpec.describe GameLogic do
 
     describe '#game_loop' do
         before(:each) do
-            @player_board = Board.new
-            @computer_board = Board.new
+            @gameplay = GameLogic.new
+            @gameplay.player_board = Board.new
+            @gameplay.computer_board = Board.new
             @cruiser = Ship.new('Cruiser', 3)
             @submarine = Ship.new('Submarine', 2)
 
-            @player_board.place_ship(@cruiser, ['A1', 'A2', 'A3'])
-            @player_board.place_ship(@submarine, ['C1', 'C2'])
-            @computer_board.place_ship(@cruiser, ['A1', 'A2', 'A3'])
-            @computer_board.place_ship(@submarine, ['C1', 'C2'])
+            @gameplay.player_board.place(@cruiser, ['A1', 'A2', 'A3'])
+            @gameplay.player_board.place(@submarine, ['C1', 'C2'])
+            @gameplay.computer_board.place(@cruiser, ['A1', 'A2', 'A3'])
+            @gameplay.computer_board.place(@submarine, ['C1', 'C2'])
         end
 
-        it 'continues while ships on user side still stand'
+        it 'continues while ships on user side still stand' do
         end
 
-        it 'continues while ships on computer side still stand'
+        it 'continues while ships on computer side still stand' do
         end
 
-        it 'ends when all ships on user side are sunk'
+        it 'ends when all ships on user side are sunk' do
         end
 
-        it 'ends when all ships on computer side are sunk'
+        it 'ends when all ships on computer side are sunk' do
         end
 
         it 'gets user input for shot' do  
+
         end
 
         it 'checks if shot is valid or been shot before' do
@@ -68,6 +70,5 @@ RSpec.describe GameLogic do
 
         it 'cycles back to top of turn' do
         end
-
     end
 end

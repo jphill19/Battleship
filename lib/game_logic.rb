@@ -1,6 +1,7 @@
 class GameLogic
 
-    attr_reader
+    attr_accessor :computer_board,
+                  :player_board
 
     def initialize
         @computer_board = nil
@@ -8,19 +9,20 @@ class GameLogic
     end
     
     def game_loop
-        until ships_sunk(@computer_board) || ships_sunk(@player_board)
+        until ships_sunk?(@computer_board) || ships_sunk?(@player_board)
             puts "Enter your next shot: "
             user_coords = gets.chomp
             user_shot(user_coords)
             computer_shot
+        end
     end
 
     def new_shot(coordinate, board)
-        if !board.cells[coorinate].fired_upon?
+        if !board.cells[coordinate].fired_upon?
             shot_hit?(board.cells[coordinate], board)
         else 
             puts "Already fired at this coordinate. Try again: "
-            user_coords = gets.chomp
+            user_coords = (gets.chomp).capitalize()
             user_shot(user_coords)
         end
     end
@@ -45,4 +47,8 @@ class GameLogic
     def ships_sunk?(board)
         board.ships.count < 1
     end
+
+    def feedback
+    end
+
 end
