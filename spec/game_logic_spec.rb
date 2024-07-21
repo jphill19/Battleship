@@ -15,6 +15,18 @@ RSpec.describe GameLogic do
     end
 
     describe '#game_loop' do
+        before(:each) do
+            @player_board = Board.new
+            @computer_board = Board.new
+            @cruiser = Ship.new('Cruiser', 3)
+            @submarine = Ship.new('Submarine', 2)
+
+            @player_board.place_ship(@cruiser, ['A1', 'A2', 'A3'])
+            @player_board.place_ship(@submarine, ['C1', 'C2'])
+            @computer_board.place_ship(@cruiser, ['A1', 'A2', 'A3'])
+            @computer_board.place_ship(@submarine, ['C1', 'C2'])
+        end
+
         it 'continues while ships on user side still stand'
         end
 
@@ -27,7 +39,7 @@ RSpec.describe GameLogic do
         it 'ends when all ships on computer side are sunk'
         end
 
-        it 'gets user input for shot' do
+        it 'gets user input for shot' do  
         end
 
         it 'checks if shot is valid or been shot before' do
