@@ -62,10 +62,21 @@ RSpec.describe GameLogic do
         it 'checks if sunk ship is last standing ship' do
         end
 
-        it 'updates both boards' do
+        it 'updates computer board with user shot' do
+            shot_1 = @gameplay.user_shot('A1')
+            
+            expect(@gameplay.computer_board.cells['A1'].fired_upon?).to be true
+
+            shot_2 = @gameplay.computer_shot
+            
+            expect(@gameplay.player_board.cells['A1'].fired_upon?).to be true
         end
 
         it 'gives user feedback on shots fired' do
+            shot_1 = @gameplay.user_shot('A1')
+            shot_2 = @gameplay.computer_shot
+
+            expect(@gameplay.feedback(shot_1, shot_2)).to eq "You hit a ship!\nThe computer hit one of your ships"
         end
 
         it 'cycles back to top of turn' do
