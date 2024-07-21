@@ -1,11 +1,13 @@
 class GameLogic
 
     attr_accessor :computer_board,
-                  :player_board
+                  :player_board,
+                  :computer_coordinates
 
     def initialize
         @computer_board = nil
         @player_board = nil
+        @computer_coordinates = nil
     end
     
     def game_loop
@@ -36,11 +38,23 @@ class GameLogic
     end
 
     def computer_shot
-        new_shot(computer_input, @player_board)
+        guess = computer_input
+        computer_shuffle(guess)
+        new_shot(guess, @player_board)
+        guess
+    end
+
+    def computer_shot_possibilities
+        @computer_coordinates = @player_board.cells.keys
     end
 
     def computer_input
-        return 'A1'
+        @computer_coordinates.sample
+    end
+
+    def computer_shuffle(shot)
+        @computer_coordinates.delete(shot)
+        @computer_coordinates.shuffle!
     end
 
     def shot_hit?(cell, board)

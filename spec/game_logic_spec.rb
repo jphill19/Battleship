@@ -25,18 +25,7 @@ RSpec.describe GameLogic do
             @gameplay.player_board.place(@cruiser, ['A1', 'A2', 'A3'])
             @gameplay.computer_board.place(@cruiser, ['A1', 'A2', 'A3'])
             @gameplay.computer_board.place(@submarine, ['C1', 'C2'])
-        end
-
-        it 'continues while ships on user side still stand' do
-        end
-
-        it 'continues while ships on computer side still stand' do
-        end
-
-        it 'ends when all ships on user side are sunk' do
-        end
-
-        it 'ends when all ships on computer side are sunk' do
+            @gameplay.computer_shot_possibilities
         end
 
         it 'gets user input for shot' do  
@@ -47,7 +36,7 @@ RSpec.describe GameLogic do
             #   NoMethodError:
         end
 
-        xit 'checks if shot is valid or been shot before' do
+        it 'checks if shot is valid or been shot before' do
             expect(@gameplay.new_shot('A1', @gameplay.player_board)).to eq true
             expect(@gameplay.new_shot('A1', @gameplay.player_board)).to eq false
         end
@@ -75,17 +64,51 @@ RSpec.describe GameLogic do
            
         it 'updates player board with computer shot' do
             shot_2 = @gameplay.computer_shot
-            expect(@gameplay.player_board.cells['A1'].fired_upon?).to be true
+            expect(@gameplay.player_board.cells[shot_2].fired_upon?).to be true
         end
 
         it 'gives user feedback on shots fired' do
             shot_1 = @gameplay.user_shot('A1')
             shot_2 = @gameplay.computer_shot
 
-            expect(@gameplay.feedback(shot_1, shot_2)).to eq "You hit a ship!\nThe computer hit one of your ships"
+            expect(@gameplay.feedback(shot_1, shot_2)).to include "You hit a ship!\n"
         end
 
-        it 'cycles back to top of turn' do
+        describe '#computer_shot' do
+            before(:each) do
+                @gameplay = GameLogic.new
+                @gameplay.player_board = Board.new
+                @gameplay.computer_board = Board.new
+                @cruiser = Ship.new('Cruiser', 3)
+                @submarine = Ship.new('Submarine', 2)
+
+                @gameplay.player_board.place(@cruiser, ['A1', 'A2', 'A3'])
+                @gameplay.computer_board.place(@cruiser, ['A1', 'A2', 'A3'])
+                @gameplay.computer_board.place(@submarine, ['C1', 'C2'])
+            end
+
+            it 'creates an array of possible shots' do
+                @gameplay.computer_shot_possibilities
+                expect(@gameplay.computer_coordinates).to eq ["A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "C4", "D1", "D2", "D3", "D4"]
+            end
+
+            it 'draws a random selection from the array' do
+                @gameplay.computer_shot_possibilities
+                expect(@gameplay.computer_input).to be_a String
+                expect(@gameplay.computer_coordinates).to include @gameplay.computer_input
+            end
+
+            it 'removes the shot from the possibilities' do
+                @gameplay.computer_shot_possibilities
+                guess = @gameplay.computer_input
+                expect(guess).to be_a String
+                expect(@gameplay.computer_coordinates).to include guess
+                expect(@gameplay.computer_coordinates.count).to eq 16
+
+                @gameplay.computer_shuffle(guess)
+                expect(@gameplay.computer_coordinates).not_to include guess
+                expect(@gameplay.computer_coordinates.count).to eq 15
+            end
         end
     end
 end
