@@ -47,7 +47,8 @@ class GameLogic
         cell.fire_upon
         if !cell.empty?
             if cell.ship.sunk?
-                board.ships.delete(cell.ship.name)
+                board.ships.delete(cell.ship)
+                return 'sunk'
             end
             true
         else
@@ -61,13 +62,17 @@ class GameLogic
 
     def feedback(shot_1, shot_2)
         response = []
-        if shot_1
+        if shot_1 == 'sunk'
+            response << "You sunk a ship!!!\n"
+        elsif shot_1 == true
             response << "You hit a ship!\n"
         else
             response << "You missed your shot...\n"
         end
 
-        if shot_2
+        if shot_2 == 'sunk'
+            response << "The computer sunk one of your ships"
+        elsif shot_2 == true
             response << "The computer hit one of your ships"
         else
             response << "The computer missed your ships!!"

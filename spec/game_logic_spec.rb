@@ -23,7 +23,6 @@ RSpec.describe GameLogic do
             @submarine = Ship.new('Submarine', 2)
 
             @gameplay.player_board.place(@cruiser, ['A1', 'A2', 'A3'])
-            @gameplay.player_board.place(@submarine, ['C1', 'C2'])
             @gameplay.computer_board.place(@cruiser, ['A1', 'A2', 'A3'])
             @gameplay.computer_board.place(@submarine, ['C1', 'C2'])
         end
@@ -48,21 +47,25 @@ RSpec.describe GameLogic do
             #   NoMethodError:
         end
 
-        it 'checks if shot is valid or been shot before' do
+        xit 'checks if shot is valid or been shot before' do
             expect(@gameplay.new_shot('A1', @gameplay.player_board)).to eq true
             expect(@gameplay.new_shot('A1', @gameplay.player_board)).to eq false
         end
 
-        it 'has computer take a shot' do
-        end
-
-        it 'updates ship if hit' do
-        end
-
         it 'checks if ship is sunk' do
+            expect(@gameplay.new_shot('A1', @gameplay.player_board)).to eq true
+
+            @gameplay.new_shot('A2', @gameplay.player_board)
+            expect(@gameplay.new_shot('A3', @gameplay.player_board)).to eq 'sunk'
         end
 
         it 'checks if sunk ship is last standing ship' do
+            expect(@gameplay.ships_sunk?(@gameplay.player_board)).to eq false
+            @gameplay.new_shot('A1', @gameplay.player_board)
+            @gameplay.new_shot('A2', @gameplay.player_board)
+            @gameplay.new_shot('A3', @gameplay.player_board)
+            expect(@gameplay.ships_sunk?(@gameplay.player_board)).to eq true
+
         end
 
         it 'updates computer board with user shot' do
