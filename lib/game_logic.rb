@@ -18,12 +18,16 @@ class GameLogic
     end
 
     def new_shot(coordinate, board)
-        if !board.cells[coordinate].fired_upon?
-            return shot_hit?(board.cells[coordinate], board)
-        else 
-            puts "Already fired at this coordinate. Try again: "
-            user_coords = (gets.chomp).capitalize()
-            user_shot(user_coords)
+        if board.cells[coordinate] != 'na'
+            if !board.cells[coordinate].fired_upon?
+                return shot_hit?(board.cells[coordinate], board)
+            else
+                puts "Already fired at this coordinate. Try again: "
+                user_coords = (gets.chomp).capitalize()
+                user_shot(user_coords)
+            end
+        else
+            false
         end
     end
 
