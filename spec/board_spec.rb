@@ -255,5 +255,27 @@ RSpec.describe Board do
 
 
     describe '#place' do
+        it "can place a ship in the cells with matching coordinates" do
+            coordinates = ['A1', 'A2', 'A3']
+            @board.place(@cruiser, coordinates)
+
+            expect(@board.cells[coordinates[0]].ship).to eq @cruiser
+            expect(@board.cells[coordinates[1]].ship).to eq @cruiser
+            expect(@board.cells[coordinates[2]].ship).to eq @cruiser
+        end
+
+        it "won't place a ship in the cells if the coordinates are not valid" do
+            coordinates = ['A1', 'B2', 'A3']
+            @board.place(@cruiser, coordinates)
+
+            expect(@board.cells[coordinates[0]].empty?).to eq true
+            expect(@board.cells[coordinates[1]].empty?).to eq true
+            expect(@board.cells[coordinates[2]].empty?).to eq true
+        end
+
+        it "returns false if the coordinates are not valid" do
+            coordinates = ['A1', 'B2', 'A3']
+            expect(@board.place(@cruiser, coordinates)).to eq false
+        end
     end
 end
