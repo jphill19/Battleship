@@ -4,7 +4,7 @@ class GameLogic
 
     def initialize
         @computers_board = nil
-        @players_board = nil
+        @player_board = nil
         @available_ships = {
             1 => {
                 :name => "submarine",
@@ -34,11 +34,12 @@ class GameLogic
         }
     end
     
-    def set_up_user_board
+    def set_up_boards
         @users_size = [ask_user_row_size, ask_user_column_size]
         ships_size_limit = @users_size.max
-        @players_board = Board.new((@users_size[0] + 64).chr, @users_size[1])
-
+        @player_board = Board.new((@users_size[0] + 64).chr, @users_size[1])
+        @computer_board = Board.new((@users_size[0] + 64).chr, @users_size[1])
+        place_ships_user(ships_size_limit)
     end
 
     def ask_user_column_size
@@ -61,8 +62,19 @@ class GameLogic
         ask_user_row_size
     end
 
-    def place_ships(ships_size_limit)
-        ships_selected = []
+    def place_ships_user(ships_size_limit)
+        @user_ships_selected = []
+        setting_board = true
+        while setting_board
+            puts "*********************************************************"
+            puts "Select ships to place on your board!\n\nCurrent board setup:\n"
+            puts @player_board.render(true)
+            present_ships(ships_size_limit)
+            user_response_data = ask_user_input(ships_size_limit)
+            if user_response_data
+                setting_board = false
+            end
+        end
     end
 
     def ask_user_for_ships
@@ -85,32 +97,64 @@ class GameLogic
         puts user_ships_feedback
     end
 
+    def available_ships_for_size_limit(ships_size_limit)
+        available_ships_limited = @available_ships.find_all do |key, ship|
+            ship[:length] <= ships_size_limit
+        end.to_h
+        available_ships_limited.keys
+    end
+
     def ask_user_input(ships_size_limit)
+        puts "\nSelect the ship you would like. Input: 'done' when finished!"
         users_input = gets.chomp
-        if users_input.downcase == 'done' && @players_board.ships.length > 0
+        if users_input.downcase == 'done' && @player_board.ships.length > 0
             puts "\nPlease place a ship before moving on"
-            return {:move_on => false, :ship => false}
+            return false
         elsif users_input.downcase == 'done'
             puts "\nPrepare yourself for Battle!"
-            return {:move_on => true, :ship => false}
-        elsif user_input.to_i <= ships_size_limit && @available_ships.keys.include?(user_input.to_i)
-            user_place_ship(@available_ships[user_input.to_i])
-            return {:move_on => false, :ship => @available_ships[user_input.to_i]}
+            return true
+        elsif available_ships_for_size_limit(ships_size_limit).include?(users_input.to_i)
+            user_place_ship(@available_ships[users_input.to_i])
+            return false
         else
-
+            puts "\e[31mDont recognize your input, try again!\e[0m\n"
+            false
         end
-            
-        
+    end
 
+    def user_coordinates_input(ships_length)
+        puts "\nInput the Coordinates where you want your ship place. Example of valid input: '#{proper_length(ships_length)}'\nTo cancel input: 'cancel'"
+        user_input = gets.chomp
+        coordinates = user_input.split(",").map { |coordinate| coordinate.strip.upcase }
+    end
 
+    def proper_length(ships_length)
+        example = ""
+        ships_length.times do |num|
+            example += " A#{num+1},"
+        end
+        example
     end
 
     def user_place_ship(user_selected_ship)
         new_ship = Ship.new(user_selected_ship[:name],user_selected_ship[:length])
-        
+        while true
+            puts "\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" + "\nSelected ship #{user_selected_ship[:name]} which is #{user_selected_ship[:length]} cells long.\nWhere would you like to place it on the board?\n" + @player_board.render(true)
+            coordinates_input = user_coordinates_input(user_selected_ship[:length])
+            puts coordinates_input
+            if coordinates_input[0] == 'CANCEL'
+                return false
+            elsif @player_board.valid_placement?(new_ship, coordinates_input)
+                @player_board.place(new_ship,coordinates_input)
+                return true
+            else
+                puts "\e[31mInvalid input, try again!\e[0m"
+            end
+        end
     end
 
     def present_ships(ships_size_limit)
+        puts "\nShips available for your fleat!\n"
         @available_ships.each do |key,value|
             if value[:length] <= ships_size_limit
                 puts "Input: #{key} | Ship: #{value[:name].capitalize}\t| Length: #{value[:length]}"

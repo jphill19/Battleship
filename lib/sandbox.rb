@@ -7,4 +7,5 @@ require './lib/game_logic'
 game_logic = GameLogic.new
 
 
-game_logic.set_up_user_board
+
+game_logic.set_up_boards
