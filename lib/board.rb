@@ -1,10 +1,11 @@
 class Board
-    attr_reader :cells
+    attr_reader :cells, :ships
 
     def initialize(end_row = "D", end_column = 4)
        @cells = Hash.new("na")
        @end_row = end_row
        @end_column = end_column.to_i
+       @ships = []
        new_board
     end
 
