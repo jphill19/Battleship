@@ -1,9 +1,14 @@
+require './lib/cell'
+require './lib/ship'
+require './lib/board'
+require './lib/game_logic'
+
 class GameLogic
 
     attr_reader
 
     def initialize
-        @computers_board = nil
+        @computer_board = nil
         @player_board = nil
         @available_ships = {
             1 => {
@@ -34,12 +39,36 @@ class GameLogic
         }
     end
     
+    def main_menu
+        puts "Welcome to BATTLESHIP"
+        if ask_user_to_play
+            set_up_boards
+            start_game
+        end
+        puts "Thanks for playing, have a nice day!"
+    end
+
+    def ask_user_to_play
+        puts "Enter p to play. Enter q to quit."
+        main_menu_input = gets.chomp
+        if main_menu_input.downcase == 'p'
+            return true
+        elsif main_menu_input.down == 'q'
+            return false
+        else
+            puts "\e[31mDont recognize your input, try again!\e[0m\n"
+            ask_user_to_play
+        end
+    end
+
     def set_up_boards
+        puts "\n\t\t\tNEW GAME!" + "\n---------------------------------------------------------\n"
         @users_size = [ask_user_row_size, ask_user_column_size]
         ships_size_limit = @users_size.max
         @player_board = Board.new((@users_size[0] + 64).chr, @users_size[1])
         @computer_board = Board.new((@users_size[0] + 64).chr, @users_size[1])
         place_ships_user(ships_size_limit)
+        place_computer_ships
     end
 
     def ask_user_column_size
@@ -62,39 +91,73 @@ class GameLogic
         ask_user_row_size
     end
 
+    def place_computer_ships
+        @empty_cells = @player_board.cells.keys
+        @user_ships_selected.each do |ship|
+            !@placed = false
+            while !@placed
+                find_random_spot(ship)
+            end
+        end
+        wipe_user_ships_selected
+    end
+
+    def wipe_user_ships_selected
+        @user_ships_selected = []
+    end
+
+    def mark_ship_as_placed
+        @placed = true
+    end
+
+    def update_empty_cells(coordinates)
+        @emtpy_cells = @empty_cells - coordinates
+    end
+
+    def find_random_spot(ship)
+        rand(2) == 0 ? column_placement_attempt(ship, random_board_spots_value) : row_placement_attempt(ship, random_board_spots_value)
+    end
+
+    def random_board_spots_value
+        @computer_board.cells.keys.sample.split('')
+    end
+
+    def column_placement_attempt(ship, spot)
+        low_row =  spot[0].ord - ship[:length]
+        new_ship = Ship.new(ship[:name], ship[:length])
+        coordinates = ((low_row + 1).chr .. spot[0]).to_a.map { |letter| "#{letter}1"}
+
+        if low_row >= 64 && @computer_board.valid_placement?(new_ship, coordinates)
+            mark_ship_as_placed
+            @computer_board.place(new_ship, coordinates)
+            update_empty_cells(coordinates)
+        end
+    end
+
+    def row_placement_attempt(ship, spot)
+        col_num = spot[1].to_i
+        low_col = col_num - ship[:length]
+        new_ship = Ship.new(ship[:name], ship[:length])
+        coordinates = (low_col + 1 .. col_num).to_a.map { |num| "#{spot[0]}#{num}" }
+
+        if low_col >= 0 && @computer_board.valid_placement?(new_ship, coordinates)
+            mark_ship_as_placed
+            @computer_board.place(new_ship, coordinates)
+            update_empty_cells(coordinates)
+        end
+    end
+
     def place_ships_user(ships_size_limit)
         @user_ships_selected = []
         setting_board = true
         while setting_board
-            puts "*********************************************************"
-            puts "Select ships to place on your board!\n\nCurrent board setup:\n"
-            puts @player_board.render(true)
+            puts "*********************************************************" + "\nSelect ships to place on your board!\n\nCurrent board setup:\n\n" + @player_board.render(true)
             present_ships(ships_size_limit)
             user_response_data = ask_user_input(ships_size_limit)
             if user_response_data
                 setting_board = false
             end
         end
-    end
-
-    def ask_user_for_ships
-        ships_selected = []
-        puts "Select which you would like to use and then place them!"
-        continue_asking = false
-        while continue_asking
-            display_users_selected_ships(ships_selected)
-            present_ships
-            puts "\nEnter 'done' when finished"
-        end
-
-    end
-
-    def display_users_selected_ships(ships_selected)
-        user_ships_feedback = "Current Ships in your fleat:"
-        ships_selected.each do |ship|
-            user_ships_feedback += ", #{ship[:name]}"
-        end
-        puts user_ships_feedback
     end
 
     def available_ships_for_size_limit(ships_size_limit)
@@ -141,11 +204,12 @@ class GameLogic
         while true
             puts "\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" + "\nSelected ship #{user_selected_ship[:name]} which is #{user_selected_ship[:length]} cells long.\nWhere would you like to place it on the board?\n" + @player_board.render(true)
             coordinates_input = user_coordinates_input(user_selected_ship[:length])
-            puts coordinates_input
+
             if coordinates_input[0] == 'CANCEL'
                 return false
             elsif @player_board.valid_placement?(new_ship, coordinates_input)
                 @player_board.place(new_ship,coordinates_input)
+                @user_ships_selected << user_selected_ship
                 return true
             else
                 puts "\e[31mInvalid input, try again!\e[0m"
