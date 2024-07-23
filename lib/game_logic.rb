@@ -232,6 +232,7 @@ class GameLogic
 
 
     def display_boards
+        puts "----------------------------------------------------------\n\n"
         puts " \e[31mEnemys Board\e[0m\n\n" + @computer_board.render
         puts "\n\n \e[32mYour Board\e[0m\n\n" + @player_board.render(true)
     end
