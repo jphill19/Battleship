@@ -40,6 +40,10 @@ class GameLogic
             }
 
         }
+    @empty_cells_for_ship_placement = []
+    @user_ships_selected = []
+    @available_user_shots = []
+    
     end
     
     def main_menu
@@ -67,10 +71,10 @@ class GameLogic
 
     def set_up_boards
         puts "\n\t\t\tNEW GAME!" + "\n---------------------------------------------------------\n"
-        @users_size = [ask_user_row_size, ask_user_column_size]
-        ships_size_limit = @users_size.max
-        @player_board = Board.new((@users_size[0] + 64).chr, @users_size[1])
-        @computer_board = Board.new((@users_size[0] + 64).chr, @users_size[1])
+        users_size = [ask_user_row_size, ask_user_column_size]
+        ships_size_limit = users_size.max
+        @player_board = Board.new((users_size[0] + 64).chr, users_size[1])
+        @computer_board = Board.new((users_size[0] + 64).chr, users_size[1])
         place_ships_user(ships_size_limit)
         place_computer_ships
     end
@@ -96,11 +100,12 @@ class GameLogic
     end
 
     def place_computer_ships
-        @empty_cells = @player_board.cells.keys
+        gather_empty_cells
         @user_ships_selected.each do |ship|
-            @placed = false
-            while !@placed
-                find_random_spot(ship)
+            placed = false
+            while !placed
+                placed = find_random_spot(ship)
+                
             end
         end
         wipe_user_ships_selected
@@ -110,20 +115,21 @@ class GameLogic
         @user_ships_selected = []
     end
 
-    def mark_ship_as_placed
-        @placed = true
+    def gather_empty_cells
+        @empty_cells_for_ship_placement = @computer_board.cells.keys
     end
 
-    def update_empty_cells(coordinates)
-        @emtpy_cells = @empty_cells - coordinates
+    def update_empty_cells_for_ship_placement(coordinates)
+        @empty_cells_for_ship_placement = @empty_cells_for_ship_placement - coordinates
     end
+
 
     def find_random_spot(ship)
         rand(2) == 0 ? column_placement_attempt(ship, random_board_spots_value) : row_placement_attempt(ship, random_board_spots_value)
     end
 
     def random_board_spots_value
-        @computer_board.cells.keys.sample.split('')
+        @empty_cells_for_ship_placement.sample.split('')
     end
 
     def column_placement_attempt(ship, spot)
@@ -132,10 +138,11 @@ class GameLogic
         coordinates = ((low_row + 1).chr .. spot[0]).to_a.map { |letter| "#{letter}1"}
 
         if low_row >= 64 && @computer_board.valid_placement?(new_ship, coordinates)
-            mark_ship_as_placed
             @computer_board.place(new_ship, coordinates)
-            update_empty_cells(coordinates)
+            update_empty_cells_for_ship_placement(coordinates)
+            return true
         end
+        false
     end
 
     def row_placement_attempt(ship, spot)
@@ -145,10 +152,11 @@ class GameLogic
         coordinates = (low_col + 1 .. col_num).to_a.map { |num| "#{spot[0]}#{num}" }
 
         if low_col >= 0 && @computer_board.valid_placement?(new_ship, coordinates)
-            mark_ship_as_placed
             @computer_board.place(new_ship, coordinates)
-            update_empty_cells(coordinates)
+            update_empty_cells_for_ship_placement(coordinates)
+            return true
         end
+        false
     end
 
     def place_ships_user(ships_size_limit)
@@ -240,7 +248,7 @@ class GameLogic
     
     
     def game_loop
-        available_user_shots
+        available_user_shots_set
         until ships_sunk?(@computer_board) || ships_sunk?(@player_board)
             display_boards
             puts "\n\nEnter your next shot: "
@@ -269,7 +277,7 @@ class GameLogic
 
 
 
-    def available_user_shots
+    def available_user_shots_set
         @available_user_shots = @computer_board.cells.keys
     end
 
