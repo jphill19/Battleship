@@ -75,29 +75,7 @@ RSpec.describe Board do
         end
 
         describe '#straight_line?' do
-            it 'checks all the coordinates first element returns true if they match' do
-                coordinates = ['A1', 'A2', 'A3']
-                expect(@board.straight_line(coordinates)).to eq({"columns" => ['1','2','3']})
-            end
 
-            it 'checks all the coordinates first element returns false if they dont match' do
-                coordinates = ['A1', 'B2', 'C3']
-                expect(@board.straight_line(coordinates)).to eq false 
-            end
-
-            it 'checks all the coordinates second element returns true if they match' do
-                coordinates = ['A1', 'B1', 'C1']
-                expect(@board.straight_line(coordinates)).to eq({'rows' => ['A','B','C']})
-            end
-
-            it 'checks all the coordinates second element returns false if they match' do
-                coordinates = ['A1', 'B2', 'C3']
-                expect(@board.straight_line(coordinates)).to eq false
-            end
-        end
-
-
-        describe '#consecutive_check?' do
             describe '#row_consecutive?' do
                 it "checks that a row is conesecutive, returns true if it is" do
                     row = ['A','B','C']
@@ -162,29 +140,45 @@ RSpec.describe Board do
                 end
             end
 
-            describe "#consecutive_check?" do
-                it 'checks if the arguement is a row or column and then test if they are consecutive, returns true if consecutive' do
-                    row = {"rows" => ['A','B','C']}
-                    column = {"columns" => ['1','2','3']}
-
-                    expect(@board.consecutive_check?(row)).to eq true
-                    expect(@board.consecutive_check?(column)).to eq true
+            describe '#straight_line?' do
+                it 'checks all the coordinates first element returns true if they match' do
+                    coordinates = ['A1', 'A2', 'A3']
+                    expect(@board.straight_line(coordinates)).to eq(true)
                 end
 
-                it 'checks if the arguement is a row or column and then test if they are consecutive, returns false if not consecutive' do
-                    row = {"rows" => ['A','B','D']}
-                    column = {"columns" => ['1','2','4']}
-
-                    expect(@board.consecutive_check?(row)).to eq false
-                    expect(@board.consecutive_check?(column)).to eq false
+                it 'checks all the coordinates first element returns false if they dont match' do
+                    coordinates = ['A1', 'B2', 'C3']
+                    expect(@board.straight_line(coordinates)).to eq false 
                 end
 
-                it 'returns false if it does not recognize the arguement data' do
-                    row = ['A','B','C']
-                    column = {"ship" => ['1','2','3']}
+                it 'checks all the coordinates second element returns true if they match' do
+                    coordinates = ['A1', 'B1', 'C1']
+                    expect(@board.straight_line(coordinates)).to eq(true)
+                end
 
-                    expect(@board.consecutive_check?(row)).to eq false
-                    expect(@board.consecutive_check?(column)).to eq false
+                it 'checks all the coordinates second element returns false if they match' do
+                    coordinates = ['A1', 'B2', 'C3']
+                    expect(@board.straight_line(coordinates)).to eq false
+                end
+
+                it 'checks all the coordinates in a row consecutive, returns false if not' do
+                    coordinates = ['A1','C1','D1']
+                    expect(@board.straight_line(coordinates)).to eq false
+                end
+
+                it 'checks all the coordinates in a column are consecutive, returns false if not ' do
+                    coordinates = ['A1', 'A2', 'A4']
+                    expect(@board.straight_line(coordinates)).to eq false
+                end
+
+                it 'returns false if it does not recognize the data' do
+                    coordinates = ['dog','A1','B1']
+                    expect(@board.straight_line(coordinates)).to eq false
+                end
+
+                it 'returns true if the coordinates are consecutive, even if they are in the wrong order' do
+                    coordinates = ['A3','A1','A2']
+                    expect(@board.straight_line(coordinates)).to eq true
                 end
             end
         end

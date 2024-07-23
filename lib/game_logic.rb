@@ -105,7 +105,6 @@ class GameLogic
             placed = false
             while !placed
                 placed = find_random_spot(ship)
-                
             end
         end
         wipe_user_ships_selected
@@ -166,9 +165,7 @@ class GameLogic
             puts "*********************************************************" + "\nSelect ships to place on your board!\n\nCurrent board setup:\n\n" + @player_board.render(true)
             present_ships(ships_size_limit)
             user_response_data = ask_user_input(ships_size_limit)
-            if user_response_data
-                setting_board = false
-            end
+            setting_board = false if user_response_data
         end
     end
 
@@ -255,6 +252,8 @@ class GameLogic
             user_coords = user_shot_input
             shot_1 = user_shot(user_coords)
             shot_2 = computer_shot
+            puts feedback(shot_1, shot_2)
+            sleep(2)
         end
         end_game
     end
@@ -265,9 +264,9 @@ class GameLogic
         display_boards
         if user_won?
             puts "\n\n\e[32mYou are Victorious! 🎉🎊\e[0m"
-        else
-            puts "\n\n\e[31mYou have been defeated. 😞\e[0m"
+            main_menu
         end
+        puts "\n\n\e[31mYou have been defeated. 😞\e[0m"
         main_menu
     end
 
@@ -292,27 +291,20 @@ class GameLogic
     def user_shot_input
         user_shot_attempt = gets.chomp
         user_shot_attempt_sanitized = user_shot_attempt.upcase
-        if verify_shot_is_available(user_shot_attempt_sanitized)
-            update_available_user_shots(user_shot_attempt_sanitized)
-            return user_shot_attempt_sanitized
-        else
+        unless verify_shot_is_available(user_shot_attempt_sanitized)
             puts "\n\e[31mInvalid input, try again!\e[0m"
-            user_shot_input
+            return user_shot_input
         end
+        update_available_user_shots(user_shot_attempt_sanitized)
+        return user_shot_attempt_sanitized
     end
 
     def new_shot(coordinate, board)
-        if board.cells[coordinate] != 'na'
-            if !board.cells[coordinate].fired_upon?
-                return shot_hit?(board.cells[coordinate], board)
-            else
-                puts "Already fired at this coordinate. Try again: "
-                user_coords = (gets.chomp).capitalize()
-                user_shot(user_coords)
-            end
-        else
-            false
-        end
+        return false if board.cells[coordinate] == 'na'
+        return shot_hit?(board.cells[coordinate], board) unless board.cells[coordinate].fired_upon? 
+        puts "Already fired at this coordinate. Try again: "
+        user_coords = user_shot_input
+        user_shot(user_coords)
     end
 
     def user_shot(user_input)
@@ -341,19 +333,36 @@ class GameLogic
 
     def shot_hit?(cell, board)
         cell.fire_upon
-        if !cell.empty?
-            if cell.ship.sunk?
-                board.ships.delete(cell.ship)
-                return 'sunk'
-            end
-            true
-        else
-            false
+        return false if cell.empty?
+        if cell.ship.sunk?
+          board.ships.delete(cell.ship)
+          return 'sunk'
         end
+        true
     end
 
     def ships_sunk?(board)
         board.ships.count < 1
+    end
+
+    def feedback(shot_1, shot_2)
+        response = []
+        if shot_1 == 'sunk'
+            response << "You sunk a ship!!!\n"
+        elsif shot_1 == true
+            response << "You hit a ship!\n"
+        else
+            response << "You missed your shot...\n"
+        end
+
+        if shot_2 == 'sunk'
+            response << "The computer sunk one of your ships"
+        elsif shot_2 == true
+            response << "The computer hit one of your ships"
+        else
+            response << "The computer missed your ships!!"
+        end
+        response.join
     end
 
 end
