@@ -12,6 +12,7 @@ class GameLogic
     def initialize
         @computer_board = nil
         @player_board = nil
+        @computer_coordinates = nil
         @available_ships = {
             1 => {
                 :name => "submarine",
@@ -39,13 +40,18 @@ class GameLogic
             }
 
         }
+    @empty_cells_for_ship_placement = []
+    @user_ships_selected = []
+    @available_user_shots = []
+    
     end
     
     def main_menu
-        puts "Welcome to BATTLESHIP"
+        puts "\nWelcome to BATTLESHIP\n"
         if ask_user_to_play
             set_up_boards
-            start_game
+            computer_shot_possibilities
+            game_loop
         end
         puts "Thanks for playing, have a nice day!"
     end
@@ -55,20 +61,20 @@ class GameLogic
         main_menu_input = gets.chomp
         if main_menu_input.downcase == 'p'
             return true
-        elsif main_menu_input.down == 'q'
+        elsif main_menu_input.downcase == 'q'
             return false
         else
-            puts "\e[31mDont recognize your input, try again!\e[0m\n"
+            puts "\e[31mDont recognize your input, try again!\e[0m\n\n"
             ask_user_to_play
         end
     end
 
     def set_up_boards
         puts "\n\t\t\tNEW GAME!" + "\n---------------------------------------------------------\n"
-        @users_size = [ask_user_row_size, ask_user_column_size]
-        ships_size_limit = @users_size.max
-        @player_board = Board.new((@users_size[0] + 64).chr, @users_size[1])
-        @computer_board = Board.new((@users_size[0] + 64).chr, @users_size[1])
+        users_size = [ask_user_row_size, ask_user_column_size]
+        ships_size_limit = users_size.max
+        @player_board = Board.new((users_size[0] + 64).chr, users_size[1])
+        @computer_board = Board.new((users_size[0] + 64).chr, users_size[1])
         place_ships_user(ships_size_limit)
         place_computer_ships
     end
@@ -94,11 +100,12 @@ class GameLogic
     end
 
     def place_computer_ships
-        @empty_cells = @player_board.cells.keys
+        gather_empty_cells
         @user_ships_selected.each do |ship|
-            !@placed = false
-            while !@placed
-                find_random_spot(ship)
+            placed = false
+            while !placed
+                placed = find_random_spot(ship)
+                
             end
         end
         wipe_user_ships_selected
@@ -108,20 +115,21 @@ class GameLogic
         @user_ships_selected = []
     end
 
-    def mark_ship_as_placed
-        @placed = true
+    def gather_empty_cells
+        @empty_cells_for_ship_placement = @computer_board.cells.keys
     end
 
-    def update_empty_cells(coordinates)
-        @emtpy_cells = @empty_cells - coordinates
+    def update_empty_cells_for_ship_placement(coordinates)
+        @empty_cells_for_ship_placement = @empty_cells_for_ship_placement - coordinates
     end
+
 
     def find_random_spot(ship)
         rand(2) == 0 ? column_placement_attempt(ship, random_board_spots_value) : row_placement_attempt(ship, random_board_spots_value)
     end
 
     def random_board_spots_value
-        @computer_board.cells.keys.sample.split('')
+        @empty_cells_for_ship_placement.sample.split('')
     end
 
     def column_placement_attempt(ship, spot)
@@ -130,10 +138,11 @@ class GameLogic
         coordinates = ((low_row + 1).chr .. spot[0]).to_a.map { |letter| "#{letter}1"}
 
         if low_row >= 64 && @computer_board.valid_placement?(new_ship, coordinates)
-            mark_ship_as_placed
             @computer_board.place(new_ship, coordinates)
-            update_empty_cells(coordinates)
+            update_empty_cells_for_ship_placement(coordinates)
+            return true
         end
+        false
     end
 
     def row_placement_attempt(ship, spot)
@@ -143,10 +152,11 @@ class GameLogic
         coordinates = (low_col + 1 .. col_num).to_a.map { |num| "#{spot[0]}#{num}" }
 
         if low_col >= 0 && @computer_board.valid_placement?(new_ship, coordinates)
-            mark_ship_as_placed
             @computer_board.place(new_ship, coordinates)
-            update_empty_cells(coordinates)
+            update_empty_cells_for_ship_placement(coordinates)
+            return true
         end
+        false
     end
 
     def place_ships_user(ships_size_limit)
@@ -172,11 +182,11 @@ class GameLogic
     def ask_user_input(ships_size_limit)
         puts "\nSelect the ship you would like. Input: 'done' when finished!"
         users_input = gets.chomp
-        if users_input.downcase == 'done' && @player_board.ships.length > 0
+        if users_input.downcase == "done" && @player_board.ships.length == 0
             puts "\nPlease place a ship before moving on"
             return false
         elsif users_input.downcase == 'done'
-            puts "\nPrepare yourself for Battle!"
+            puts "*********************************************************" + "\n\e\t[34mPrepare yourself for Battle!\n\n\e[0m"
             return true
         elsif available_ships_for_size_limit(ships_size_limit).include?(users_input.to_i)
             user_place_ship(@available_ships[users_input.to_i])
@@ -309,6 +319,124 @@ class GameLogic
             response << "The computer missed your ships!!"
         end
         response.join
+    end
+
+
+    def display_boards
+        puts "----------------------------------------------------------\n\n"
+        puts " \e[31mEnemys Board\e[0m\n\n" + @computer_board.render
+        puts "\n\n \e[32mYour Board\e[0m\n\n" + @player_board.render(true)
+    end
+
+    
+    
+    def game_loop
+        available_user_shots_set
+        until ships_sunk?(@computer_board) || ships_sunk?(@player_board)
+            display_boards
+            puts "\n\nEnter your next shot: "
+            user_coords = user_shot_input
+            shot_1 = user_shot(user_coords)
+            shot_2 = computer_shot
+        end
+        end_game
+    end
+
+    def end_game
+        puts "\n\n*********************************************************"
+        puts "\tGame Over!"
+        display_boards
+        if user_won?
+            puts "\n\n\e[32mYou are Victorious! 🎉🎊\e[0m"
+        else
+            puts "\n\n\e[31mYou have been defeated. 😞\e[0m"
+        end
+        main_menu
+    end
+
+    def user_won?
+        ships_sunk?(@computer_board) 
+    end
+
+
+
+    def available_user_shots_set
+        @available_user_shots = @computer_board.cells.keys
+    end
+
+    def update_available_user_shots(shot_to_remove)
+        @available_user_shots.delete(shot_to_remove)
+    end
+
+    def verify_shot_is_available(shot)
+        @available_user_shots.include?(shot)
+    end
+
+    def user_shot_input
+        user_shot_attempt = gets.chomp
+        user_shot_attempt_sanitized = user_shot_attempt.upcase
+        if verify_shot_is_available(user_shot_attempt_sanitized)
+            update_available_user_shots(user_shot_attempt_sanitized)
+            return user_shot_attempt_sanitized
+        else
+            puts "\n\e[31mInvalid input, try again!\e[0m"
+            user_shot_input
+        end
+    end
+
+    def new_shot(coordinate, board)
+        if board.cells[coordinate] != 'na'
+            if !board.cells[coordinate].fired_upon?
+                return shot_hit?(board.cells[coordinate], board)
+            else
+                puts "Already fired at this coordinate. Try again: "
+                user_coords = (gets.chomp).capitalize()
+                user_shot(user_coords)
+            end
+        else
+            false
+        end
+    end
+
+    def user_shot(user_input)
+        new_shot(user_input, @computer_board)
+    end
+
+    def computer_shot
+        guess = computer_input
+        computer_shuffle(guess)
+        new_shot(guess, @player_board)
+        guess
+    end
+
+    def computer_shot_possibilities
+        @computer_coordinates = @player_board.cells.keys
+    end
+
+    def computer_input
+        @computer_coordinates.sample
+    end
+
+    def computer_shuffle(shot)
+        @computer_coordinates.delete(shot)
+        @computer_coordinates.shuffle!
+    end
+
+    def shot_hit?(cell, board)
+        cell.fire_upon
+        if !cell.empty?
+            if cell.ship.sunk?
+                board.ships.delete(cell.ship)
+                return 'sunk'
+            end
+            true
+        else
+            false
+        end
+    end
+
+    def ships_sunk?(board)
+        board.ships.count < 1
     end
 
 end
