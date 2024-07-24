@@ -31,21 +31,11 @@ class Cell
     false
   end
 
-  def render(toggle=false)
-    if toggle
-      if @fired == false && !empty?
-        return "S"
-      end
-    end
-    
-    if @fired == false
-      return "."
-    elsif empty? 
-      return "M"
-    elsif @ship.sunk?
-      return "X"
-    else
-      return "H"
-    end
+  def render(toggle = false)
+    return "S" if toggle && !@fired && !empty?
+    return "." unless @fired
+    return "M" if empty?
+    return "X" if @ship.sunk?
+    "H"
   end
 end
