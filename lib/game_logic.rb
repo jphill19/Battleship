@@ -1,7 +1,7 @@
 require './lib/cell'
 require './lib/ship'
 require './lib/board'
-require './lib/game_logic'
+require './lib/computer_brain_2'
 
 class GameLogic
 
@@ -43,6 +43,7 @@ class GameLogic
     @empty_cells_for_ship_placement = []
     @user_ships_selected = []
     @available_user_shots = []
+    @computer_brain = nil
     
     end
     
@@ -51,9 +52,26 @@ class GameLogic
         if ask_user_to_play
             set_up_boards
             computer_shot_possibilities
+            setup_computer_brain
+            puts "*********************************************************" + "\n\e\t[34mPrepare yourself for Battle!\n\n\e[0m"
             game_loop
+            puts "Thanks for playing, have a nice day!"
         end
-        puts "Thanks for playing, have a nice day!"
+    end
+
+    def ask_difficulty_level
+        puts "\nEnter your diffuclty level you want to play with \n\nInput 1 | Easy\nInput 2 | Hard"
+        user_input = gets.chomp.to_i
+        return true if user_input.to_i == 2
+        return false if user_input.to_i == 1
+        puts puts "\e[31mDont recognize your input, try again!\e[0m\n\n"
+        ask_difficulty_level
+    end
+
+    def setup_computer_brain
+        @computer_brain = nil
+        difficuluty_level = ask_difficulty_level
+        @computer_brain = ComputerBrain.new(@player_board) if difficuluty_level
     end
 
     def ask_user_to_play
@@ -105,7 +123,6 @@ class GameLogic
             placed = false
             while !placed
                 placed = find_random_spot(ship)
-                
             end
         end
         wipe_user_ships_selected
@@ -166,9 +183,7 @@ class GameLogic
             puts "*********************************************************" + "\nSelect ships to place on your board!\n\nCurrent board setup:\n\n" + @player_board.render(true)
             present_ships(ships_size_limit)
             user_response_data = ask_user_input(ships_size_limit)
-            if user_response_data
-                setting_board = false
-            end
+            setting_board = false if user_response_data
         end
     end
 
@@ -186,7 +201,6 @@ class GameLogic
             puts "\nPlease place a ship before moving on"
             return false
         elsif users_input.downcase == 'done'
-            puts "*********************************************************" + "\n\e\t[34mPrepare yourself for Battle!\n\n\e[0m"
             return true
         elsif available_ships_for_size_limit(ships_size_limit).include?(users_input.to_i)
             user_place_ship(@available_ships[users_input.to_i])
@@ -338,6 +352,8 @@ class GameLogic
             user_coords = user_shot_input
             shot_1 = user_shot(user_coords)
             shot_2 = computer_shot
+            puts feedback(shot_1, shot_2)
+            sleep(2)
         end
         end_game
     end
@@ -348,9 +364,9 @@ class GameLogic
         display_boards
         if user_won?
             puts "\n\n\e[32mYou are Victorious! 🎉🎊\e[0m"
-        else
-            puts "\n\n\e[31mYou have been defeated. 😞\e[0m"
+            main_menu
         end
+        puts "\n\n\e[31mYou have been defeated. 😞\e[0m"
         main_menu
     end
 
@@ -375,27 +391,20 @@ class GameLogic
     def user_shot_input
         user_shot_attempt = gets.chomp
         user_shot_attempt_sanitized = user_shot_attempt.upcase
-        if verify_shot_is_available(user_shot_attempt_sanitized)
-            update_available_user_shots(user_shot_attempt_sanitized)
-            return user_shot_attempt_sanitized
-        else
+        unless verify_shot_is_available(user_shot_attempt_sanitized)
             puts "\n\e[31mInvalid input, try again!\e[0m"
-            user_shot_input
+            return user_shot_input
         end
+        update_available_user_shots(user_shot_attempt_sanitized)
+        return user_shot_attempt_sanitized
     end
 
     def new_shot(coordinate, board)
-        if board.cells[coordinate] != 'na'
-            if !board.cells[coordinate].fired_upon?
-                return shot_hit?(board.cells[coordinate], board)
-            else
-                puts "Already fired at this coordinate. Try again: "
-                user_coords = (gets.chomp).capitalize()
-                user_shot(user_coords)
-            end
-        else
-            false
-        end
+        return false if board.cells[coordinate] == 'na'
+        return shot_hit?(board.cells[coordinate], board) unless board.cells[coordinate].fired_upon? 
+        puts "Already fired at this coordinate. Try again: "
+        user_coords = user_shot_input
+        user_shot(user_coords)
     end
 
     def user_shot(user_input)
@@ -406,7 +415,6 @@ class GameLogic
         guess = computer_input
         computer_shuffle(guess)
         new_shot(guess, @player_board)
-        guess
     end
 
     def computer_shot_possibilities
@@ -414,6 +422,7 @@ class GameLogic
     end
 
     def computer_input
+        return @computer_brain.decide_shot if @computer_brain
         @computer_coordinates.sample
     end
 
@@ -424,19 +433,36 @@ class GameLogic
 
     def shot_hit?(cell, board)
         cell.fire_upon
-        if !cell.empty?
-            if cell.ship.sunk?
-                board.ships.delete(cell.ship)
-                return 'sunk'
-            end
-            true
-        else
-            false
+        return false if cell.empty?
+        if cell.ship.sunk?
+          board.ships.delete(cell.ship)
+          return 'sunk'
         end
+        true
     end
 
     def ships_sunk?(board)
         board.ships.count < 1
+    end
+
+    def feedback(shot_1, shot_2)
+        response = []
+        if shot_1 == 'sunk'
+            response << "You sunk a ship!!!\n"
+        elsif shot_1 == true
+            response << "You hit a ship!\n"
+        else
+            response << "You missed your shot...\n"
+        end
+
+        if shot_2 == 'sunk'
+            response << "The computer sunk one of your ships"
+        elsif shot_2 == true
+            response << "The computer hit one of your ships"
+        else
+            response << "The computer missed your ships!!"
+        end
+        response.join
     end
 
 end
