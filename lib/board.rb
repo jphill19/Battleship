@@ -1,10 +1,11 @@
 class Board
-    attr_reader :cells
+    attr_reader :cells, :ships, :end_column, :end_row
 
     def initialize(end_row = "D", end_column = 4)
        @cells = Hash.new("na")
        @end_row = end_row
        @end_column = end_column.to_i
+       @ships = []
        new_board
     end
 
@@ -32,15 +33,9 @@ class Board
     end
 
     def valid_placement?(ship, coordinates)
-        return false if !match_length?(ship,coordinates)
-        return false if !valid_coordinates?(coordinates)
-        line = straight_line(coordinates)
-        return false if !line
-        return false if !consecutive_check?(line)
-        return false if overlap?(coordinates)
-        true
-    end
-
+        match_length?(ship, coordinates) && valid_coordinates?(coordinates) && straight_line(coordinates) && !overlap?(coordinates)
+      end
+      
     def match_length?(ship, coordinates)
         ship.length == coordinates.length
     end
@@ -52,13 +47,9 @@ class Board
             rows << coordinate[0]
             columns << coordinate[1]
         end
-        if rows.uniq.count == 1
-            return {"columns" =>  columns}
-        elsif columns.uniq.count == 1
-            return {"rows" => rows}
-        else
-            return false
-        end
+        return column_consecutive?(columns) if rows.uniq.count == 1
+        return row_consecutive?(rows) if columns.uniq.count == 1
+        false
     end
 
     def row_consecutive?(row)
@@ -72,30 +63,14 @@ class Board
         int_nums_sort = int_nums.sort
         return int_nums_sort == (int_nums_sort.first .. int_nums_sort.last).to_a
     end
-
-    def consecutive_check?(line)
-        if line.class == Hash
-            if line.keys[0] == "rows"
-                return row_consecutive?(line["rows"]) 
-            elsif line.keys[0] == "columns"
-                return column_consecutive?(line["columns"])
-            else
-                false
-            end
-        else
-            false
-        end
-    end
         
     def overlap?(coordinates)
-        coordinates.each do |coordinate|
-            return true if !@cells[coordinate].empty?
-        end
-        false
+        coordinates.any? { |coordinate| !@cells[coordinate].empty? }
     end
 
     def place(ship, coordinates)
         if valid_placement?(ship, coordinates)
+            @ships << ship
             coordinates.each do |coordinate|
                 @cells[coordinate].place_ship(ship)
             end
