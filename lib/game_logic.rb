@@ -1,7 +1,7 @@
 require './lib/cell'
 require './lib/ship'
 require './lib/board'
-require './lib/computer_brain3'
+require './lib/computer_brain_2'
 
 class GameLogic
 
@@ -43,6 +43,7 @@ class GameLogic
     @empty_cells_for_ship_placement = []
     @user_ships_selected = []
     @available_user_shots = []
+    @computer_brain = nil
     
     end
     
@@ -51,10 +52,26 @@ class GameLogic
         if ask_user_to_play
             set_up_boards
             computer_shot_possibilities
+            setup_computer_brain
+            puts "*********************************************************" + "\n\e\t[34mPrepare yourself for Battle!\n\n\e[0m"
             game_loop
             puts "Thanks for playing, have a nice day!"
         end
-        # puts "Thanks for playing, have a nice day!"
+    end
+
+    def ask_difficulty_level
+        puts "\nEnter your diffuclty level you want to play with \n\nInput 1 | Easy\nInput 2 | Hard"
+        user_input = gets.chomp.to_i
+        return true if user_input.to_i == 2
+        return false if user_input.to_i == 1
+        puts puts "\e[31mDont recognize your input, try again!\e[0m\n\n"
+        ask_difficulty_level
+    end
+
+    def setup_computer_brain
+        @computer_brain = nil
+        difficuluty_level = ask_difficulty_level
+        @computer_brain = ComputerBrain.new(@player_board) if difficuluty_level
     end
 
     def ask_user_to_play
@@ -184,7 +201,6 @@ class GameLogic
             puts "\nPlease place a ship before moving on"
             return false
         elsif users_input.downcase == 'done'
-            puts "*********************************************************" + "\n\e\t[34mPrepare yourself for Battle!\n\n\e[0m"
             return true
         elsif available_ships_for_size_limit(ships_size_limit).include?(users_input.to_i)
             user_place_ship(@available_ships[users_input.to_i])
@@ -246,7 +262,6 @@ class GameLogic
     
     
     def game_loop
-        @computer_brain = ComputerBrain.new(@player_board)
         available_user_shots_set
         until ships_sunk?(@computer_board) || ships_sunk?(@player_board)
             display_boards
@@ -255,7 +270,7 @@ class GameLogic
             shot_1 = user_shot(user_coords)
             shot_2 = computer_shot
             puts feedback(shot_1, shot_2)
-            # sleep(2)
+            sleep(2)
         end
         end_game
     end
@@ -301,26 +316,12 @@ class GameLogic
         return user_shot_attempt_sanitized
     end
 
-    # def new_shot(coordinate, board)
-    #     return false if board.cells[coordinate] == 'na'
-    #     return shot_hit?(board.cells[coordinate], board) unless board.cells[coordinate].fired_upon? 
-    #     puts "Already fired at this coordinate. Try again: "
-    #     user_coords = user_shot_input
-    #     user_shot(user_coords)
-    # end
-
     def new_shot(coordinate, board)
-        if board.cells[coordinate] != 'na'
-            if !board.cells[coordinate].fired_upon?
-                return shot_hit?(board.cells[coordinate], board)
-            else
-                puts "Already fired at this coordinate. Try again: "
-                user_coords = (gets.chomp).capitalize()
-                user_shot(user_coords)
-            end
-        else
-            false
-        end
+        return false if board.cells[coordinate] == 'na'
+        return shot_hit?(board.cells[coordinate], board) unless board.cells[coordinate].fired_upon? 
+        puts "Already fired at this coordinate. Try again: "
+        user_coords = user_shot_input
+        user_shot(user_coords)
     end
 
     def user_shot(user_input)
@@ -331,7 +332,6 @@ class GameLogic
         guess = computer_input
         computer_shuffle(guess)
         new_shot(guess, @player_board)
-        guess
     end
 
     def computer_shot_possibilities
@@ -339,8 +339,8 @@ class GameLogic
     end
 
     def computer_input
-        # @computer_coordinates.sample
-        @computer_brain.decide_shot
+        return @computer_brain.decide_shot if @computer_brain
+        @computer_coordinates.sample
     end
 
     def computer_shuffle(shot)
@@ -348,27 +348,14 @@ class GameLogic
         @computer_coordinates.shuffle!
     end
 
-    # def shot_hit?(cell, board)
-    #     cell.fire_upon
-    #     return false if cell.empty?
-    #     if cell.ship.sunk?
-    #       board.ships.delete(cell.ship)
-    #       return 'sunk'
-    #     end
-    #     true
-    # end
-
     def shot_hit?(cell, board)
         cell.fire_upon
-        if !cell.empty?
-            if cell.ship.sunk?
-                board.ships.delete(cell.ship)
-                return 'sunk'
-            end
-            true
-        else
-            false
+        return false if cell.empty?
+        if cell.ship.sunk?
+          board.ships.delete(cell.ship)
+          return 'sunk'
         end
+        true
     end
 
     def ships_sunk?(board)

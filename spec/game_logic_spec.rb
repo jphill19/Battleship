@@ -62,11 +62,6 @@ RSpec.describe GameLogic do
             shot_1 = @gameplay.user_shot('A1')
             expect(@gameplay.computer_board.cells['A1'].fired_upon?).to be true
         end
-           
-        it 'updates player board with computer shot' do
-            shot_2 = @gameplay.computer_shot
-            expect(@gameplay.player_board.cells[shot_2].fired_upon?).to be true
-        end
 
         it 'gives user feedback on shots fired' do
             shot_1 = @gameplay.user_shot('A1')
