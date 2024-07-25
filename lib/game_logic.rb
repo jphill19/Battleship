@@ -40,10 +40,10 @@ class GameLogic
             }
 
         }
-    @empty_cells_for_ship_placement = []
-    @user_ships_selected = []
-    @available_user_shots = []
-    @computer_brain = nil
+        @empty_cells_for_ship_placement = []
+        @user_ships_selected = []
+        @available_user_shots = []
+        @computer_brain = nil
     
     end
     
@@ -207,7 +207,7 @@ class GameLogic
             return false
         else
             puts "\e[31mDont recognize your input, try again!\e[0m\n"
-=======
+        end
         @computer_coordinates = nil
     end
     
@@ -310,7 +310,8 @@ class GameLogic
                 puts "Input: #{key} | Ship: #{value[:name].capitalize}\t| Length: #{value[:length]}"
             end
         end
-=======
+    end
+
     def ships_sunk?(board)
         board.ships.count < 1
     end
@@ -335,15 +336,12 @@ class GameLogic
         response.join
     end
 
-
     def display_boards
         puts "----------------------------------------------------------\n\n"
         puts " \e[31mEnemys Board\e[0m\n\n" + @computer_board.render
         puts "\n\n \e[32mYour Board\e[0m\n\n" + @player_board.render(true)
     end
 
-    
-    
     def game_loop
         available_user_shots_set
         until ships_sunk?(@computer_board) || ships_sunk?(@player_board)
@@ -373,8 +371,6 @@ class GameLogic
     def user_won?
         ships_sunk?(@computer_board) 
     end
-
-
 
     def available_user_shots_set
         @available_user_shots = @computer_board.cells.keys
